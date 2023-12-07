@@ -12,7 +12,8 @@ It can be easily integrated into other Python projects using the included Python
 - 256-bit unsigned integer arithmetic operations
 - Finite field arithmetic operations
 - Elliptic curve point operations
-- Parallel public key generation using CUDA
+- Parallel public key generation
+- Python bindings
 
 ## Usage
 
