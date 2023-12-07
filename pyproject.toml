@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "cuECC"
+version = "0.1.0"
+description = ""
+authors = ["Minjae Gwon <beta.underalpha@gmail.com>"]
+readme = "README.md"
+
+[[tool.poetry.packages]]
+include = "bindings"
+from = "src"
+
+[[tool.poetry.packages]]
+include = "benchmark"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+isort = "^5.12.0"
+pyright = "^1.1.323"
+pytest = "^6.2.5"
+
+[tool.isort]
+profile = "black"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
