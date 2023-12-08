@@ -38,7 +38,7 @@ To compare the performance of cuECC with a pure-python implementation, follow th
 1. Navigate to the cloned directory.
 1. Run `make all` to build the library.
 1. Run `poetry install` to install the dependencies.
-1. Run `poetry run benchmark-public-key-generation` to execute the benchmark.
+1. Run `poetry run benchmark-public-key` to benchmark the public key generation process.
 
 Note that the Python implementation is from [`cryptography-python`](https://github.com/mohanson/cryptography-python/blob/master/secp256k1.py).
 

@@ -12,8 +12,12 @@ from = "src"
 [[tool.poetry.packages]]
 include = "benchmark"
 
+[tool.poetry.scripts]
+benchmark-public-key = "benchmark.subjects.public_key:main"
+
 [tool.poetry.dependencies]
 python = "^3.12"
+click = "^8.1.7"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
