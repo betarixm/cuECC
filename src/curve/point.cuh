@@ -1,13 +1,8 @@
 #ifndef _POINT_CUH
 #define _POINT_CUH
 
-#include "../config.h"
 #include "../uint/u256.cuh"
 #include "fp.cuh"
-
-#ifdef DEBUG_POINT
-#include <stdio.h>
-#endif
 
 typedef struct {
   u64 x[4];
@@ -31,10 +26,6 @@ __forceinline__ __device__ void pointCopy(Point *output, const Point *p) {
 __forceinline__ __device__ void pointAdd(Point *output, const Point *p,
                                          const Point *q, const u64 prime[4],
                                          const u64 a[4], const u64 b[4]) {
-#ifdef DEBUG_POINT
-  printf("# [pointAdd: start]\n");
-#endif
-
   if (pointIsZero(p)) {
     pointCopy(output, q);
 
@@ -103,79 +94,25 @@ __forceinline__ __device__ void pointAdd(Point *output, const Point *p,
   fpSub(temp.y, y1, p->y, prime);
 
   pointCopy(output, &temp);
-
-#ifdef DEBUG_POINT
-  printf("assert Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx)) + "
-         "Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx)) == "
-         "Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx))\n",
-         p->x[3], p->x[2], p->x[1], p->x[0], p->y[3], p->y[2], p->y[1], p->y[0],
-         q->x[3], q->x[2], q->x[1], q->x[0], q->y[3], q->y[2], q->y[1], q->y[0],
-         output->x[3], output->x[2], output->x[1], output->x[0], output->y[3],
-         output->y[2], output->y[1], output->y[0]);
-
-  printf("# [pointAdd: end]\n");
-#endif
 }
 
 __forceinline__ __device__ void pointNeg(Point *output, const Point *p,
                                          const u64 prime[4]) {
-#ifdef DEBUG_POINT
-  printf("# [pointNeg: start]\n");
-#endif
-
   u256Copy(output->x, p->x);
   fpNeg(output->y, p->y, prime);
-
-#ifdef DEBUG_POINT
-  printf("assert -Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx)) == "
-         "Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx))\n",
-         p->x[3], p->x[2], p->x[1], p->x[0], p->y[3], p->y[2], p->y[1], p->y[0],
-         output->x[3], output->x[2], output->x[1], output->x[0], output->y[3],
-         output->y[2], output->y[1], output->y[0]);
-
-  printf("# [pointNeg: end]\n");
-#endif
 }
 
 __forceinline__ __device__ void pointSub(Point *output, const Point *p,
                                          const Point *q, const u64 prime[4],
                                          const u64 a[4], const u64 b[4]) {
-#ifdef DEBUG_POINT
-  printf("# [pointSub: start]\n");
-#endif
-
   Point qNeg;
   pointNeg(&qNeg, q, prime);
   pointAdd(output, p, &qNeg, prime, a, b);
-
-#ifdef DEBUG_POINT
-  printf("assert Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx)) - "
-         "Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx)) == "
-         "Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx))\n",
-         p->x[3], p->x[2], p->x[1], p->x[0], p->y[3], p->y[2], p->y[1], p->y[0],
-         q->x[3], q->x[2], q->x[1], q->x[0], q->y[3], q->y[2], q->y[1], q->y[0],
-         output->x[3], output->x[2], output->x[1], output->x[0], output->y[3],
-         output->y[2], output->y[1], output->y[0]);
-
-  printf("# [pointSub: end]\n");
-#endif
 }
 
 __forceinline__ __device__ void pointMul(Point *output, const Point *p,
                                          const u64 k[4], const u64 prime[4],
                                          const u64 a[4], const u64 b[4]) {
-#ifdef DEBUG_POINT
-  printf("# [pointMul: start]\n");
-#endif
-
   pointSetZero(output);
 
   if (pointIsZero(p) || fpIsZero(k)) {
@@ -196,37 +133,10 @@ __forceinline__ __device__ void pointMul(Point *output, const Point *p,
     pointCopy(&temp, &q);
     pointAdd(&q, &temp, &temp, prime, a, b);
   }
-
-#ifdef DEBUG_POINT
-  printf("assert Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx)) * "
-         "Fq(0x%016llx%016llx%016llx%016llx) == "
-         "Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx))\n",
-         p->x[3], p->x[2], p->x[1], p->x[0], p->y[3], p->y[2], p->y[1], p->y[0],
-         k[3], k[2], k[1], k[0], output->x[3], output->x[2], output->x[1],
-         output->x[0], output->y[3], output->y[2], output->y[1], output->y[0]);
-
-  printf("# [pointMul: end]\n");
-#endif
 }
 
 __forceinline__ __device__ bool pointEqual(const Point *p, const Point *q) {
-#ifdef DEBUG_POINT
-  printf("# [pointEqual: start]\n");
-#endif
-
   bool result = u256Compare(p->x, q->x) == 0 && u256Compare(p->y, q->y) == 0;
-
-#ifdef DEBUG_POINT
-  printf("assert Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx)) == "
-         "Pt(Fq(0x%016llx%016llx%016llx%016llx), "
-         "Fq(0x%016llx%016llx%016llx%016llx))\n",
-         p->x[3], p->x[2], p->x[1], p->x[0], p->y[3], p->y[2], p->y[1], p->y[0],
-         q->x[3], q->x[2], q->x[1], q->x[0], q->y[3], q->y[2], q->y[1],
-         q->y[0]);
-#endif
 
   return result;
 }

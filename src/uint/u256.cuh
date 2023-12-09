@@ -1,16 +1,7 @@
 #ifndef _U256_CUH
 #define _U256_CUH
 
-#include "../config.h"
 #include "u64.cuh"
-
-#ifdef DEBUG_U256
-#include <stdio.h>
-#endif
-
-#ifdef DEBUG_U512
-#include <stdio.h>
-#endif
 
 __forceinline__ __device__ void u256Copy(u64 output[4], const u64 a[4]) {
   for (int i = 0; i < 4; ++i) {
@@ -129,10 +120,6 @@ __forceinline__ __device__ int u512Compare(const u64 a[8], const u64 b[8]) {
 
 __forceinline__ __device__ bool u256Add(u64 output[4], const u64 a[4],
                                         const u64 b[4]) {
-#ifdef DEBUG_U256
-  printf("# [u256Add: start]\n");
-#endif
-
   u64 result[4] = {0};
 
   u64 carry = 0;
@@ -142,16 +129,6 @@ __forceinline__ __device__ bool u256Add(u64 output[4], const u64 a[4],
   }
 
   u256Copy(output, result);
-
-#ifdef DEBUG_U256
-  printf("assert 0x%016llx%016llx%016llx%016llx + "
-         "0x%016llx%016llx%016llx%016llx == "
-         "0x%016llx%016llx%016llx%016llx%016llx\n",
-         a[3], a[2], a[1], a[0], b[3], b[2], b[1], b[0], carry ? 1ll : 0ll,
-         output[3], output[2], output[1], output[0]);
-
-  printf("# [u256Add: end]\n");
-#endif
 
   return carry;
 }
@@ -220,10 +197,6 @@ __forceinline__ __device__ void u256Mul(u64 output[8], const u64 a[4],
 __forceinline__ __device__ void u256Div(u64 quotient[4], u64 remainder[4],
                                         const u64 dividend[4],
                                         const u64 divisor[4]) {
-#ifdef DEBUG_U256
-  printf("# [u256Div] start\n");
-#endif
-
   u64 quotientAndRemainder[8] = {0};
 
   u256SetZero(quotientAndRemainder + 4);
@@ -245,32 +218,11 @@ __forceinline__ __device__ void u256Div(u64 quotient[4], u64 remainder[4],
 
   u256Copy(quotient, quotientAndRemainder);
   u256Copy(remainder, quotientAndRemainder + 4);
-
-#ifdef DEBUG_U256
-  printf("assert 0x%016llx%016llx%016llx%016llx "
-         "== 0x%016llx%016llx%016llx%016llx // "
-         "0x%016llx%016llx%016llx%016llx\n",
-         quotient[3], quotient[2], quotient[1], quotient[0], dividend[3],
-         dividend[2], dividend[1], dividend[0], divisor[3], divisor[2],
-         divisor[1], divisor[0]);
-  printf("assert 0x%016llx%016llx%016llx%016llx "
-         "== 0x%016llx%016llx%016llx%016llx %% "
-         "0x%016llx%016llx%016llx%016llx\n",
-         remainder[3], remainder[2], remainder[1], remainder[0], dividend[3],
-         dividend[2], dividend[1], dividend[0], divisor[3], divisor[2],
-         divisor[1], divisor[0]);
-
-  printf("# [u256Div: end]\n");
-#endif
 }
 
 __forceinline__ __device__ void u512Div(u64 quotient[8], u64 remainder[8],
                                         const u64 dividend[8],
                                         const u64 divisor[8]) {
-#ifdef DEBUG_U512
-  printf("# [u512Div] start\n");
-#endif
-
   u512SetZero(quotient);
   u512SetZero(remainder);
 
@@ -283,26 +235,6 @@ __forceinline__ __device__ void u512Div(u64 quotient[8], u64 remainder[8],
       u512SetBit(quotient, i, 1);
     }
   }
-#ifdef DEBUG_U512
-  printf("assert 0x%016llx%016llx%016llx%016llx%016llx%016llx%016llx%016llx "
-         "== 0x%016llx%016llx%016llx%016llx%016llx%016llx%016llx%016llx // "
-         "0x%016llx%016llx%016llx%016llx%016llx%016llx%016llx%016llx\n",
-         quotient[7], quotient[6], quotient[5], quotient[4], quotient[3],
-         quotient[2], quotient[1], quotient[0], dividend[7], dividend[6],
-         dividend[5], dividend[4], dividend[3], dividend[2], dividend[1],
-         dividend[0], divisor[7], divisor[6], divisor[5], divisor[4],
-         divisor[3], divisor[2], divisor[1], divisor[0]);
-  printf("assert 0x%016llx%016llx%016llx%016llx%016llx%016llx%016llx%016llx "
-         "== 0x%016llx%016llx%016llx%016llx%016llx%016llx%016llx%016llx %% "
-         "0x%016llx%016llx%016llx%016llx%016llx%016llx%016llx%016llx\n",
-         remainder[7], remainder[6], remainder[5], remainder[4], remainder[3],
-         remainder[2], remainder[1], remainder[0], dividend[7], dividend[6],
-         dividend[5], dividend[4], dividend[3], dividend[2], dividend[1],
-         dividend[0], divisor[7], divisor[6], divisor[5], divisor[4],
-         divisor[3], divisor[2], divisor[1], divisor[0]);
-
-  printf("# [u512Div] end\n");
-#endif
 }
 
 __forceinline__ __device__ void u256ModP(u64 output[4], const u64 a[4],
@@ -317,10 +249,6 @@ __forceinline__ __device__ void u256ModP(u64 output[4], const u64 a[4],
 
 __forceinline__ __device__ void u512ModU256P(u64 output[4], const u64 a[8],
                                              const u64 p[4]) {
-#ifdef DEBUG_U512
-  printf("# [u512ModU256P] start\n");
-#endif
-
   u64 quotient[8] = {0};
   u64 outputExtended[8] = {0};
   u64 pExtended[8] = {0};
@@ -330,23 +258,10 @@ __forceinline__ __device__ void u512ModU256P(u64 output[4], const u64 a[8],
   u512Div(quotient, outputExtended, a, pExtended);
 
   u256Copy(output, outputExtended);
-
-#ifdef DEBUG_U512
-  printf("assert 0x%016llx%016llx%016llx%016llx == "
-         "0x%016llx%016llx%016llx%016llx%016llx%016llx%016llx%016llx %% "
-         "0x%016llx%016llx%016llx%016llx\n",
-         output[3], output[2], output[1], output[0], a[7], a[6], a[5], a[4],
-         a[3], a[2], a[1], a[0], p[3], p[2], p[1], p[0]);
-
-  printf("# [u512ModU256P] end\n");
-#endif
 }
 
 __forceinline__ __device__ void u256AddModP(u64 output[4], const u64 a[4],
                                             const u64 b[4], const u64 p[4]) {
-#ifdef DEBUG_U256
-  printf("# [u256AddModP: start]\n");
-#endif
   u64 added[4];
   int carry = u256Add(added, a, b);
 
@@ -358,14 +273,6 @@ __forceinline__ __device__ void u256AddModP(u64 output[4], const u64 a[4],
   }
 
   u512ModU256P(output, extended, p);
-#ifdef DEBUG_U256
-  printf("assert (0x%016llx%016llx%016llx%016llx + "
-         "0x%016llx%016llx%016llx%016llx) %% 0x%016llx%016llx%016llx%016llx == "
-         "0x%016llx%016llx%016llx%016llx\n",
-         a[3], a[2], a[1], a[0], b[3], b[2], b[1], b[0], p[3], p[2], p[1], p[0],
-         output[3], output[2], output[1], output[0]);
-  printf("# [u256AddModP: end]\n");
-#endif
 }
 
 __forceinline__ __device__ void u256SubModP(u64 output[4], const u64 a[4],
@@ -403,10 +310,6 @@ __forceinline__ __device__ void u256MulModP(u64 output[4], const u64 a[4],
 
 __forceinline__ __device__ void u256PowModP(u64 output[4], const u64 a[4],
                                             const u64 b[4], const u64 p[4]) {
-#ifdef DEBUG_U256
-  printf("# [u256PowModP: start]\n");
-#endif
-
   u64 result[4] = {1};
 
   u64 aModP[4];
@@ -429,24 +332,10 @@ __forceinline__ __device__ void u256PowModP(u64 output[4], const u64 a[4],
   }
 
   u256Copy(output, result);
-
-#ifdef DEBUG_U256
-  printf("assert pow(0x%016llx%016llx%016llx%016llx, "
-         "0x%016llx%016llx%016llx%016llx, 0x%016llx%016llx%016llx%016llx) == "
-         "0x%016llx%016llx%016llx%016llx\n",
-         a[3], a[2], a[1], a[0], b[3], b[2], b[1], b[0], p[3], p[2], p[1], p[0],
-         output[3], output[2], output[1], output[0]);
-
-  printf("# [u256PowModP: end]\n");
-#endif
 }
 
 __forceinline__ __device__ void u256InvModP(u64 output[4], const u64 a[4],
                                             const u64 p[4]) {
-#ifdef DEBUG_U256
-  printf("# [u256InvModP: start]\n");
-#endif
-
   u64 result[4];
   u64 pMinus2[4] = {0};
 
@@ -455,15 +344,6 @@ __forceinline__ __device__ void u256InvModP(u64 output[4], const u64 a[4],
   u256PowModP(result, a, pMinus2, p);
 
   u256Copy(output, result);
-
-#ifdef DEBUG_U256
-  printf("assert pow(0x%016llx%016llx%016llx%016llx, -1, "
-         "0x%016llx%016llx%016llx%016llx) == 0x%016llx%016llx%016llx%016llx\n",
-         a[3], a[2], a[1], a[0], p[3], p[2], p[1], p[0], output[3], output[2],
-         output[1], output[0]);
-
-  printf("# [u256InvModP: end]\n");
-#endif
 }
 
 #endif

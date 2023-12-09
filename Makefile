@@ -5,7 +5,7 @@ SRC_DIR = $(PROJECT_DIR)/src
 
 LIB_TARGET = $(BUILD_DIR)/libcuecc.so
 LIB_SOURCE = $(SRC_DIR)/*.cu
-LIB_DEPENDENCIES = $(SRC_DIR)/*.h $(SRC_DIR)/**/*.cuh
+LIB_DEPENDENCIES = $(SRC_DIR)/**/*.cuh
 
 NVCC = nvcc
 NVCC_FLAGS = -Xcompiler -fPIC -shared -rdc=true -o $(LIB_TARGET)
